@@ -5,22 +5,24 @@ Doorkeeper.configure do
   orm :active_record
 
   # This block will be called to check whether the resource owner is authenticated or not.
-  resource_owner_authenticator do
-    # raise "Please configure doorkeeper resource_owner_authenticator block located in #{__FILE__}"
+  resource_owner_authenticator do |routes|
     # Put your resource owner authentication logic here.
-    # Example implementation:
-    User.find_by_id(session[:user_id]) || redirect_to(new_user_session_url)
-  end
-
-  skip_authorization do
-    true
+    # If you want to use named routes from your app you need
+    # to call them on routes object eg.
+    # routes.new_user_session_path
+    current_user || warden.authenticate!(:scope => :user)
   end
 
   # If you didn't skip applications controller from Doorkeeper routes in your application routes.rb
   # file then you need to declare this block in order to restrict access to the web interface for
   # adding oauth authorized applications. In other case it will return 403 Forbidden response
   # every time somebody will try to access the admin web interface.
-  #
+  admin_authenticator do
+    #   # Put your admin authentication logic here.
+    #   # Example implementation:
+    #current_admin_user || warden.authenticate!(:scope => :user)
+    authenticate_user!
+  end
   # admin_authenticator do
   #   # Put your admin authentication logic here.
   #   # Example implementation:
@@ -50,7 +52,7 @@ Doorkeeper.configure do
   # Access token expiration time (default 2 hours).
   # If you want to disable expiration, set this to nil.
   #
-  # access_token_expires_in 2.hours
+   access_token_expires_in 2.hours
 
   # Assign custom TTL for access tokens. Will be used instead of access_token_expires_in
   # option if defined. In case the block returns `nil` value Doorkeeper fallbacks to
@@ -64,6 +66,7 @@ Doorkeeper.configure do
   # `grant_type` - the grant type of the request (see Doorkeeper::OAuth)
   # `scopes` - the requested scopes (see Doorkeeper::OAuth::Scopes)
   #
+  # default_scopes  :public
   # custom_access_token_expires_in do |context|
   #   context.client.application.additional_settings.implicit_oauth_expiration
   # end
@@ -152,7 +155,7 @@ Doorkeeper.configure do
   # `grant_type` - the grant type of the request (see Doorkeeper::OAuth)
   # `scopes` - the requested scopes (see Doorkeeper::OAuth::Scopes)
   #
-  # use_refresh_token
+  use_refresh_token
 
   # Provide support for an owner to be assigned to each registered application (disabled by default)
   # Optional parameter confirmation: true (default false) if you want to enforce ownership of

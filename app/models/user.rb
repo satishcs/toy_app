@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,
          :confirmable, :lockable
     has_many :microposts
+    
 	def print
 		puts "after some time delayed"
 	end

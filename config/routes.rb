@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :widgets
   use_doorkeeper
   resources :microposts
   devise_for :users

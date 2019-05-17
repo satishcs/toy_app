@@ -1,9 +1,11 @@
 class MicropostsController < ApplicationController
   before_action :set_micropost, only: [:show, :edit, :update, :destroy]
+  before_action :doorkeeper_authorize!
   # before_action :authenticate_user!, except: [:index, :show]
 
   # GET /microposts
   def index
+    debugger
     @microposts = Micropost.all
   end
 
